@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { createRequire } from 'module';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import dotenv from 'dotenv';
@@ -7,6 +7,10 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const require = createRequire(import.meta.url);
+const prismaPkg = require('@prisma/client');
+const PrismaClient = prismaPkg.PrismaClient || prismaPkg.default?.PrismaClient || prismaPkg;
 
 // Load unified root environment configuration
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
