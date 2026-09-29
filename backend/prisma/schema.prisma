@@ -1,0 +1,132 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Station {
+  id             String        @id @default(cuid())
+  name           String
+  operator       String
+  location       String
+  address        String?
+  latitude       Float?
+  longitude      Float?
+  totalPorts     Int           @default(4)
+  availablePorts Int           @default(4)
+  maxPowerKw     Float         @default(360)
+  status         String        @default("Operational")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  chargers       ChargerNode[]
+}
+
+model ChargerNode {
+  id                      String   @id
+  name                    String
+  vendor                  String
+  model                   String
+  ip                      String
+  evsePort                String
+  connectors              String
+  ratingDesc              String
+  maxPowerKw              Float
+  activePowerKw           Float    @default(0)
+  powerTargetKw           Float    @default(0)
+  busVoltageV             Float    @default(0)
+  deliveryCurrentA        Float    @default(0)
+  bayTempC                Float    @default(25)
+  gunATempC               Float    @default(25)
+  gunBTempC               Float    @default(25)
+  powerModulesTempC       Float    @default(30)
+  status                  String   @default("Available")
+  ocppVersion             String   @default("OCPP 2.0.1")
+  activeSessionMinutes    Int?     @default(0)
+  lastAckMs               Int      @default(12)
+  coolantPressureBar      Float    @default(2.4)
+  isolationResistanceMOhm Float    @default(950)
+  pumpRpm                 Int      @default(1800)
+  architecture            String   @default("800V ARCH")
+  stationId               String?
+  station                 Station? @relation(fields: [stationId], references: [id], onDelete: SetNull)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model ActiveSession {
+  id            String   @id
+  operator      String
+  protocol      String   @default("OCPP 2.0.1")
+  stationName   String
+  chargerId     String
+  connectorType String   @default("CCS2")
+  maxPowerKw    Float
+  vehicleModel  String
+  driverName    String
+  driverId      String
+  licensePlate  String
+  currentSoc    Int      @default(0)
+  activePowerKw Float    @default(0)
+  powerStatus   String   @default("Negotiating")
+  deliveredKwh  Float    @default(0)
+  costInr       Float    @default(0)
+  duration      String   @default("0m")
+  status        String   @default("Charging")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model RoamingPartner {
+  id               String   @id
+  name             String
+  initials         String
+  verified         Boolean  @default(true)
+  country          String   @default("IN")
+  cpoId            String   @unique
+  role             String   @default("CPO / MSP")
+  protocol         String   @default("OCPI 2.2.1")
+  throughputReqSec Float    @default(0)
+  errorStats       String   @default("0.00% err")
+  status           String   @default("Live / Healthy")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SettlementBatch {
+  id                 String   @id
+  autoGenNote        String?
+  cpoName            String
+  cpoInitials        String
+  cpoId              String
+  cycle              String
+  cycleDates         String
+  sessionsCount      Int      @default(0)
+  energyMwh          Float    @default(0)
+  grossAmount        Float    @default(0)
+  platformFeePercent Float    @default(3.5)
+  platformFeeAmount  Float    @default(0)
+  gatewayDeduct      Float    @default(0)
+  adjustments        Float    @default(0)
+  adjustmentNote     String?
+  netPayable         Float    @default(0)
+  tdsDeducted        Float    @default(0)
+  status             String   @default("Ready")
+  clearingAccount    String
+  bankName           String
+  gstin              String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model TraceLog {
+  id        String   @id @default(cuid())
+  time      String
+  proto     String
+  method    String
+  status    String
+  body      String
+  traceId   String
+  createdAt DateTime @default(now())
+}

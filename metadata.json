@@ -1,0 +1,6 @@
+{
+  "name": "ChargeOne Energy Network OS",
+  "description": "Enterprise CPO Operations Command Center, OCPI/OCPP Roaming Gateway, Charger Telemetry Mesh, and Financial Clearinghouse Ledger.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "strict": false,
+    "noEmit": true,
+    "composite": true
+  },
+  "include": ["server.ts", "db.ts", "prisma/**/*"]
+}
