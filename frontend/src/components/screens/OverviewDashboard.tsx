@@ -75,48 +75,48 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   return (
     <div className="flex flex-col w-full gap-6">
       {/* Header Banner & Operational Control Toolbar */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-surface-container-lowest p-5 rounded-xl shadow-xs border border-outline-variant/20">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-surface-container-lowest p-4 sm:p-5 rounded-xl shadow-xs border border-outline-variant/20">
+        <div className="flex flex-col gap-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-[11px] uppercase tracking-wider font-bold">
               Live Grid Synced
             </span>
             <span className="text-secondary text-[11px]">•</span>
-            <span className="text-secondary text-[11px] font-medium">
+            <span className="text-secondary text-[11px] font-medium whitespace-nowrap">
               OCPP 2.0.1 Ingestion Active (120 Hz)
             </span>
           </div>
-          <h1 className="text-[26px] font-bold text-on-surface tracking-tight">
+          <h1 className="text-xl sm:text-2xl xl:text-[26px] font-bold text-on-surface tracking-tight">
             CPO Operations Command Center
           </h1>
-          <p className="text-[13px] text-secondary">
+          <p className="text-[12px] sm:text-[13px] text-secondary">
             Real-time infrastructure health, roaming sessions, and energy dispatch across 42 hubs.
           </p>
         </div>
 
         {/* Filters & High-Level Actions */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           <div className="flex items-center bg-surface-container rounded-lg p-1 text-on-surface">
             <button
               onClick={() => setTimeRange('24h')}
-              className={`px-3 py-1.5 rounded-md text-[13px] font-semibold transition-all flex items-center gap-1 ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-[12px] sm:text-[13px] font-semibold transition-all flex items-center gap-1 ${
                 timeRange === '24h'
                   ? 'bg-surface-container-lowest text-primary shadow-xs'
                   : 'text-secondary hover:text-on-surface'
               }`}
             >
               <span className="material-symbols-outlined text-[16px]">schedule</span>
-              <span>Live (Last 24 Hours)</span>
+              <span>Live (24h)</span>
             </button>
             <button
               onClick={() => setTimeRange('yesterday')}
-              className={`px-3 py-1.5 rounded-md text-[13px] transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-[12px] sm:text-[13px] transition-all ${
                 timeRange === 'yesterday'
                   ? 'bg-surface-container-lowest text-primary shadow-xs font-semibold'
                   : 'text-secondary hover:text-on-surface'
               }`}
             >
-              Compare Yesterday
+              Yesterday
             </button>
           </div>
 
@@ -124,41 +124,41 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             <select
               value={selectedHub}
               onChange={(e) => setSelectedHub(e.target.value)}
-              className="appearance-none bg-surface-container-lowest text-[13px] font-medium text-on-surface px-3.5 py-2 pr-8 rounded-lg shadow-xs border border-outline-variant/30 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+              className="appearance-none bg-surface-container-lowest text-[12px] sm:text-[13px] font-medium text-on-surface px-3 py-2 pr-7 rounded-lg shadow-xs border border-outline-variant/30 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
             >
               <option>All 42 Hubs (National)</option>
               <option>Metro West Hub (Mumbai/Pune)</option>
               <option>Highway Express Corridor (BLR-CHE)</option>
               <option>Delhi NCR Hypercharge Cluster</option>
             </select>
-            <span className="material-symbols-outlined text-[18px] text-secondary absolute right-2.5 top-2.5 pointer-events-none">
+            <span className="material-symbols-outlined text-[18px] text-secondary absolute right-2 top-2.5 pointer-events-none">
               expand_more
             </span>
           </div>
 
           <div className="h-6 w-px bg-surface-container-high hidden md:block"></div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
               onClick={handleExportCdrs}
-              className="px-3 py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high text-[13px] font-medium transition-colors flex items-center gap-1.5 border border-outline-variant/20"
+              className="px-2.5 sm:px-3 py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high text-[12px] sm:text-[13px] font-medium transition-colors flex items-center gap-1 border border-outline-variant/20"
               title="Export Charge Detail Records"
             >
-              <span className="material-symbols-outlined text-[18px] text-secondary">download</span>
+              <span className="material-symbols-outlined text-[17px] text-secondary">download</span>
               <span>Export CDRs</span>
             </button>
             <button
               onClick={handleSimulateLoadBalancer}
-              className="px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container hover:bg-surface-container-high text-[13px] font-medium transition-colors flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container hover:bg-surface-container-high text-[12px] sm:text-[13px] font-medium transition-colors flex items-center gap-1"
             >
-              <span className="material-symbols-outlined text-[18px]">tune</span>
-              <span className="hidden sm:inline">Simulate Load Balancer</span>
+              <span className="material-symbols-outlined text-[17px]">tune</span>
+              <span className="hidden sm:inline">Simulate Balancer</span>
             </button>
             <button
               onClick={onOpenProvisionModal}
-              className="px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-[13px] font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
+              className="px-3 sm:px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-[12px] sm:text-[13px] font-semibold transition-colors flex items-center gap-1 shadow-xs"
             >
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
+              <span className="material-symbols-outlined text-[17px]">add_circle</span>
               <span>Provision Station</span>
             </button>
           </div>
@@ -166,7 +166,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       </div>
 
       {/* 6-Metric KPI Ribbon */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3 sm:gap-4">
         {/* Card 1 */}
         <div className="bg-surface-container-lowest p-4 rounded-xl shadow-xs border border-outline-variant/20 flex flex-col justify-between hover:shadow-sm transition-shadow">
           <div className="flex items-center justify-between">
@@ -387,19 +387,19 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           {/* Map & Network Topology Canvas */}
           <div className="bg-surface-container-lowest rounded-xl shadow-xs border border-outline-variant/20 overflow-hidden flex flex-col">
             {/* Card Bar */}
-            <div className="p-4 bg-surface-container-lowest flex flex-wrap items-center justify-between gap-3 border-b border-surface-container">
-              <div className="flex items-center gap-3">
-                <span className="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
-                <div className="flex flex-col">
-                  <span className="text-[16px] text-on-surface font-bold">
+            <div className="p-3.5 sm:p-4 bg-surface-container-lowest flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 border-b border-surface-container">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shrink-0"></span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[14px] sm:text-[16px] text-on-surface font-bold truncate">
                     Live Geospatial Distribution &amp; Hub Load
                   </span>
-                  <span className="text-[12px] text-secondary font-medium">
+                  <span className="text-[11px] sm:text-[12px] text-secondary font-medium">
                     Real-time status of 42 high-voltage DC Fast Charger sites across India
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <button
                   onClick={() => onOpenAiDrawer?.('Locate 360kW DC fast charging stations near Indiranagar Bengaluru')}
                   className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 text-[11px] font-bold flex items-center gap-1.5 transition-colors border border-emerald-500/30 cursor-pointer"
@@ -408,20 +408,20 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   <span className="material-symbols-outlined text-[15px] text-emerald-600">pin_drop</span>
                   <span>Google Maps Grounding</span>
                 </button>
-                <span className="px-2.5 py-1 rounded bg-surface-container text-[11px] text-on-surface font-semibold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-primary"></span> 38 Nominal
+                <span className="px-2 py-0.5 rounded bg-surface-container text-[10px] sm:text-[11px] text-on-surface font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary"></span> 38 Nominal
                 </span>
-                <span className="px-2.5 py-1 rounded bg-surface-container text-[11px] text-on-surface font-semibold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-secondary"></span> 3 High Load
+                <span className="px-2 py-0.5 rounded bg-surface-container text-[10px] sm:text-[11px] text-on-surface font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span> 3 High Load
                 </span>
-                <span className="px-2.5 py-1 rounded bg-surface-container text-[11px] text-error font-semibold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-error"></span> 1 Faulted
+                <span className="px-2 py-0.5 rounded bg-surface-container text-[10px] sm:text-[11px] text-error font-semibold flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-error"></span> 1 Faulted
                 </span>
               </div>
             </div>
 
             {/* Simulated Map Canvas Container */}
-            <div className="relative w-full h-[410px] bg-surface-container-low overflow-hidden select-none">
+            <div className="relative w-full h-[380px] sm:h-[420px] md:h-[450px] bg-surface-container-low overflow-hidden select-none">
               {/* Dynamic Visual Location Map Asset */}
               <div
                 className="w-full h-full bg-cover bg-center transition-all duration-700"
@@ -504,39 +504,39 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </div>
 
               {/* Top-Left Floating Map Telemetry Badges */}
-              <div className="absolute top-4 left-4 flex flex-col gap-2 z-20">
-                <div className="bg-surface-container-lowest/95 backdrop-blur-md px-4 py-2 rounded-lg shadow-md flex items-center gap-4 border border-outline-variant/30">
+              <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-col gap-2 z-20 max-w-[calc(100%-1.5rem)]">
+                <div className="bg-surface-container-lowest/95 backdrop-blur-md px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg shadow-md flex items-center gap-2.5 sm:gap-4 border border-outline-variant/30">
                   <div>
-                    <span className="text-[10px] uppercase text-secondary font-bold tracking-wider block">
+                    <span className="text-[9px] sm:text-[10px] uppercase text-secondary font-bold tracking-wider block">
                       Aggregated Load
                     </span>
-                    <span className="text-[18px] text-on-surface font-extrabold font-mono">
+                    <span className="text-[15px] sm:text-[18px] text-on-surface font-extrabold font-mono leading-tight">
                       6,840 kW
                     </span>
                   </div>
-                  <div className="h-7 w-px bg-surface-container"></div>
+                  <div className="h-6 sm:h-7 w-px bg-surface-container"></div>
                   <div>
-                    <span className="text-[10px] uppercase text-secondary font-bold tracking-wider block">
+                    <span className="text-[9px] sm:text-[10px] uppercase text-secondary font-bold tracking-wider block">
                       Channel Split
                     </span>
-                    <span className="text-[13px] font-bold text-primary">
-                      59% Direct <span className="text-secondary font-normal">/ 41% Roaming</span>
+                    <span className="text-[11px] sm:text-[13px] font-bold text-primary leading-tight">
+                      59% Direct <span className="text-secondary font-normal hidden sm:inline">/ 41% Roaming</span>
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Floating Hub Spotlight Card */}
-              <div className="absolute bottom-4 left-4 right-4 md:right-auto md:w-96 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl shadow-xl z-20 border border-outline-variant/30">
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto md:w-96 bg-surface-container-lowest/95 backdrop-blur-md p-3 sm:p-4 rounded-xl shadow-xl z-20 border border-outline-variant/30">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-primary uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold text-primary uppercase tracking-wider">
                     <span className="w-2 h-2 rounded-full bg-primary"></span> High Throughput Hub
                   </span>
-                  <span className="text-[11px] text-secondary font-mono">
+                  <span className="text-[10px] sm:text-[11px] text-secondary font-mono">
                     {activePin === 'blr' ? 'ID: HUB-042-BLR' : `ID: HUB-0${activePin.toUpperCase()}`}
                   </span>
                 </div>
-                <h2 className="text-[16px] text-on-surface font-bold">
+                <h2 className="text-[14px] sm:text-[16px] text-on-surface font-bold truncate">
                   {activePin === 'blr'
                     ? 'Bengaluru Tech Corridor Hub 04'
                     : activePin === 'mum'
@@ -545,7 +545,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                     ? 'Aerocity Airport MegaHub 01'
                     : 'Pune Expressway Superhub'}
                 </h2>
-                <div className="flex items-center justify-between text-[12px] text-secondary my-2">
+                <div className="flex items-center justify-between text-[11px] sm:text-[12px] text-secondary my-1.5 sm:my-2">
                   <span>
                     Capacity: <strong>12 / 16 In Use</strong>
                   </span>
@@ -556,13 +556,13 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => onNavigate('live-telemetry-health')}
-                    className="flex-1 py-1.5 rounded-lg bg-primary text-on-primary text-[12px] font-semibold hover:bg-primary-container transition-colors text-center shadow-xs"
+                    className="flex-1 py-1.5 rounded-lg bg-primary text-on-primary text-[11px] sm:text-[12px] font-semibold hover:bg-primary-container transition-colors text-center shadow-xs cursor-pointer"
                   >
                     Launch Remote Diagnostics
                   </button>
                   <button
                     onClick={() => onShowToast('Hub configuration profile synced with local gateway.', 'info')}
-                    className="px-2.5 py-1.5 rounded-lg bg-surface-container text-secondary hover:text-on-surface transition-colors"
+                    className="px-2.5 py-1.5 rounded-lg bg-surface-container text-secondary hover:text-on-surface transition-colors cursor-pointer"
                     title="Settings"
                   >
                     <span className="material-symbols-outlined text-[18px]">settings</span>
@@ -576,25 +576,25 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           <div className="bg-surface-container-lowest p-5 rounded-xl shadow-xs border border-outline-variant/20 flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-[16px] text-on-surface font-bold">
+                <h2 className="text-[15px] sm:text-[16px] text-on-surface font-bold">
                   24-Hour Energy Dispatch &amp; Live Revenue Profile
                 </h2>
-                <p className="text-[12px] text-secondary font-medium">
+                <p className="text-[11px] sm:text-[12px] text-secondary font-medium">
                   Hourly generation curve demonstrating peak evening commute surge and tariff yield.
                 </p>
               </div>
-              <div className="flex items-center gap-4 text-[12px]">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] sm:text-[12px]">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-xs bg-primary"></span>
-                  <span className="text-on-surface font-medium">Direct Fleet (MWh)</span>
+                  <span className="w-2.5 h-2.5 rounded-xs bg-primary"></span>
+                  <span className="text-on-surface font-medium whitespace-nowrap">Direct Fleet (MWh)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-xs bg-secondary"></span>
-                  <span className="text-on-surface font-medium">OCPI Roaming (MWh)</span>
+                  <span className="w-2.5 h-2.5 rounded-xs bg-secondary"></span>
+                  <span className="text-on-surface font-medium whitespace-nowrap">OCPI Roaming (MWh)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-4 h-1 bg-primary rounded-full"></span>
-                  <span className="text-on-surface font-medium">Revenue (₹ Lakhs)</span>
+                  <span className="w-3.5 h-1 bg-primary rounded-full"></span>
+                  <span className="text-on-surface font-medium whitespace-nowrap">Revenue (₹ Lakhs)</span>
                 </div>
               </div>
             </div>
@@ -626,7 +626,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </div>
 
               {/* Visual Bar & Line Overlay */}
-              <div className="relative w-full h-44 flex items-end justify-between px-6 z-10">
+              <div className="relative w-full h-44 flex items-end justify-between px-2 sm:px-6 z-10">
                 {[
                   { time: '00:00', height: '18%', direct: '60%', roaming: '40%' },
                   { time: '03:00', height: '12%', direct: '65%', roaming: '35%' },
@@ -639,14 +639,14 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 ].map((bar, i) => (
                   <div key={i} className="flex flex-col items-center gap-1.5 h-full justify-end group">
                     <div
-                      className="w-5 sm:w-8 bg-surface-container rounded-t flex flex-col justify-end overflow-hidden transition-all duration-300 group-hover:scale-105"
+                      className="w-3.5 sm:w-6 md:w-8 bg-surface-container rounded-t flex flex-col justify-end overflow-hidden transition-all duration-300 group-hover:scale-105"
                       style={{ height: bar.height }}
                     >
                       <div className="w-full bg-secondary" style={{ height: bar.roaming }}></div>
                       <div className="w-full bg-primary" style={{ height: bar.direct }}></div>
                     </div>
                     <span
-                      className={`text-[11px] font-mono ${
+                      className={`text-[10px] sm:text-[11px] font-mono ${
                         bar.highlight ? 'text-primary font-bold' : 'text-secondary'
                       }`}
                     >
@@ -658,7 +658,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
               {/* Trend Overlay Line SVG */}
               <svg
-                className="absolute inset-x-6 top-8 h-36 w-[calc(100%-3rem)] pointer-events-none z-20"
+                className="absolute inset-x-2 sm:inset-x-6 top-8 h-36 w-[calc(100%-1rem)] sm:w-[calc(100%-3rem)] pointer-events-none z-20"
                 fill="none"
                 preserveAspectRatio="none"
                 viewBox="0 0 700 120"
@@ -676,23 +676,23 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
           {/* Live Active Charging Sessions Feed (Rich Table) */}
           <div className="bg-surface-container-lowest rounded-xl shadow-xs border border-outline-variant/20 overflow-hidden flex flex-col">
-            <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-container">
-              <div className="flex items-center gap-2.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></div>
-                <h2 className="text-[16px] text-on-surface font-bold">
+            <div className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-container">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse shrink-0"></div>
+                <h2 className="text-[14px] sm:text-[16px] text-on-surface font-bold truncate">
                   Live Active Charging Sessions Feed
                 </h2>
                 <span className="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-[11px] font-bold">
                   58 Live
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-initial">
                   <input
                     value={sessionSearch}
                     onChange={(e) => setSessionSearch(e.target.value)}
-                    className="h-8 pl-7 pr-3 rounded-lg bg-surface-container text-[12px] font-medium focus:outline-none focus:ring-1 focus:ring-primary w-48 border border-outline-variant/20"
-                    placeholder="Filter session or vehicle..."
+                    className="h-8 pl-7 pr-3 rounded-lg bg-surface-container text-[12px] font-medium focus:outline-none focus:ring-1 focus:ring-primary w-full sm:w-48 border border-outline-variant/20"
+                    placeholder="Filter session..."
                     type="text"
                   />
                   <span className="material-symbols-outlined text-[16px] text-secondary absolute left-2 top-2">
@@ -701,8 +701,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 </div>
                 <button
                   onClick={() => setSessionSearch('')}
-                  className="p-1.5 rounded-lg bg-surface-container text-secondary hover:text-on-surface transition-colors"
-                  title="Filter options"
+                  className="p-1.5 rounded-lg bg-surface-container text-secondary hover:text-on-surface transition-colors shrink-0"
+                  title="Clear filter"
                 >
                   <span className="material-symbols-outlined text-[18px]">filter_list</span>
                 </button>
@@ -710,7 +710,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </div>
 
             <div className="overflow-x-auto w-full">
-              <table className="w-full text-left border-collapse font-body-sm text-[13px]">
+              <table className="w-full min-w-[820px] text-left border-collapse font-body-sm text-[13px]">
                 <thead>
                   <tr className="bg-surface-container-low text-[11px] text-secondary uppercase font-bold tracking-wider border-b border-surface-container">
                     <th className="py-2.5 px-4">Session ID</th>
@@ -1028,7 +1028,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             <p className="text-[12px] text-on-surface-variant">
               Instant override policy to throttle high draw stations during utility peak-tariff window (18:00 - 21:00).
             </p>
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-1">
               <button
                 onClick={() => {
                   setIsSmartThrottleActive(!isSmartThrottleActive);
@@ -1039,7 +1039,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                     isSmartThrottleActive ? 'info' : 'success'
                   );
                 }}
-                className={`flex-1 py-2 px-3 rounded-lg text-[12px] font-bold transition-all shadow-xs ${
+                className={`flex-1 py-2 px-3 rounded-lg text-[12px] font-bold transition-all shadow-xs cursor-pointer ${
                   isSmartThrottleActive
                     ? 'bg-secondary text-on-secondary'
                     : 'bg-primary text-on-primary hover:bg-primary-container'
@@ -1049,7 +1049,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </button>
               <button
                 onClick={() => onShowToast('Configuring peak shaving parameters...', 'info')}
-                className="py-2 px-3 rounded-lg bg-surface-container-lowest text-on-surface text-[12px] font-medium hover:bg-surface-container transition-colors border border-outline-variant/30"
+                className="py-2 px-3 rounded-lg bg-surface-container-lowest text-on-surface text-[12px] font-medium hover:bg-surface-container transition-colors border border-outline-variant/30 cursor-pointer"
               >
                 Configure
               </button>

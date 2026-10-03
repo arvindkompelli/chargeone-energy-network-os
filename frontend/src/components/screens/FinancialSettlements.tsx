@@ -98,7 +98,7 @@ export const FinancialSettlements: React.FC<FinancialSettlementsProps> = ({ onSh
       </div>
 
       {/* Executive Clearing Metrics Bar (5 Metrics) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         {/* Metric 1 */}
         <div className="bg-surface-container-lowest p-4 rounded-xl shadow-xs border border-outline-variant/20 flex flex-col justify-between">
           <div className="flex items-center justify-between">
@@ -337,8 +337,8 @@ export const FinancialSettlements: React.FC<FinancialSettlementsProps> = ({ onSh
 
           {/* Table Container */}
           <div className="bg-surface-container-lowest rounded-xl shadow-xs border border-outline-variant/20 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left font-body-sm text-[13px] border-collapse">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full min-w-[1050px] text-left font-body-sm text-[13px] border-collapse">
                 <thead>
                   <tr className="bg-surface-container-low text-secondary text-[11px] uppercase tracking-wider font-bold border-b border-surface-container">
                     <th className="py-2.5 px-4">Batch ID</th>
@@ -510,13 +510,36 @@ export const FinancialSettlements: React.FC<FinancialSettlementsProps> = ({ onSh
                 <span className="font-bold text-on-surface">42</span> CPO settlement batches • Total ready for ACH: <strong className="text-primary font-bold font-mono">₹94,76,211</strong>
               </div>
               <div className="flex items-center gap-1">
-                <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface disabled:opacity-50" disabled>
+                <button
+                  onClick={() => onShowToast('Already at the first page of settlement batches.', 'info')}
+                  className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+                >
                   Previous
                 </button>
-                <button className="px-2.5 py-1 rounded bg-primary text-on-primary font-bold">1</button>
-                <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high">2</button>
-                <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high">3</button>
-                <button className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high">Next</button>
+                <button
+                  onClick={() => onShowToast('Showing Page 1 batches', 'info')}
+                  className="px-2.5 py-1 rounded bg-primary text-on-primary font-bold cursor-pointer"
+                >
+                  1
+                </button>
+                <button
+                  onClick={() => onShowToast('Showing Page 2 batches', 'info')}
+                  className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+                >
+                  2
+                </button>
+                <button
+                  onClick={() => onShowToast('Showing Page 3 batches', 'info')}
+                  className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+                >
+                  3
+                </button>
+                <button
+                  onClick={() => onShowToast('Loaded next batch of 10 settlements.', 'info')}
+                  className="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+                >
+                  Next
+                </button>
               </div>
             </div>
           </div>
@@ -611,8 +634,8 @@ export const FinancialSettlements: React.FC<FinancialSettlementsProps> = ({ onSh
             </div>
 
             {/* Double-Entry Ledger Table */}
-            <div className="overflow-x-auto bg-surface rounded-lg p-2 border border-outline-variant/20">
-              <table className="w-full text-left font-body-sm text-[13px] border-collapse">
+            <div className="overflow-x-auto w-full bg-surface rounded-lg p-2 border border-outline-variant/20">
+              <table className="w-full min-w-[700px] text-left font-body-sm text-[13px] border-collapse">
                 <thead>
                   <tr className="text-secondary text-[11px] uppercase tracking-wider font-bold">
                     <th className="py-2 px-3">Ledger Account &amp; Chart Code</th>

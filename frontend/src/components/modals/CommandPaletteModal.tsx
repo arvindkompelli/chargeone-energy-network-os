@@ -74,11 +74,11 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-on-background/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4"
+      className="fixed inset-0 z-50 bg-on-background/50 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-20 p-3 sm:p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 max-w-xl w-full overflow-hidden animate-scaleUp flex flex-col"
+        className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 max-w-xl w-full max-h-[85vh] overflow-hidden animate-scaleUp flex flex-col"
       >
         {/* Search Input Bar */}
         <div className="p-3.5 flex items-center gap-3 border-b border-surface-container bg-surface-container-low">
@@ -90,9 +90,13 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
             placeholder="Search stations, chargers, active sessions, CPO batches, or commands..."
             className="w-full bg-transparent text-[14px] text-on-surface placeholder:text-secondary focus:outline-none font-medium"
           />
-          <kbd className="px-1.5 py-0.5 text-[10px] font-bold text-secondary bg-surface-container rounded border border-outline-variant/40">
-            ESC
-          </kbd>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+            title="Close"
+          >
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
         </div>
 
         {/* Results List */}
@@ -116,9 +120,6 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                   </span>
                   <span className="font-bold">Google Maps Grounding &amp; AI Intelligence</span>
                 </div>
-                <kbd className="px-1.5 py-0.5 text-[10px] font-semibold bg-emerald-200/60 rounded text-emerald-900">
-                  ⌘J
-                </kbd>
               </button>
 
               {quickNav

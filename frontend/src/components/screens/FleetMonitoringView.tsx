@@ -62,7 +62,7 @@ export const FleetMonitoringView: React.FC<FleetMonitoringViewProps> = ({ onShow
 
       {/* Tab Navigation Switcher Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface-container-lowest p-1.5 rounded-xl shadow-xs border border-outline-variant/20">
-        <div className="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+        <div className="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded-lg">
           <button
             onClick={() => setActiveTab('fleets')}
             className={`px-4 py-2 rounded-lg text-[13px] font-semibold transition-all flex items-center gap-2 cursor-pointer ${
@@ -231,8 +231,8 @@ export const FleetMonitoringView: React.FC<FleetMonitoringViewProps> = ({ onShow
               Re-evaluate All Rules
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left font-body-sm text-[13px]">
+          <div className="overflow-x-auto w-full">
+            <table className="w-full min-w-[700px] text-left font-body-sm text-[13px]">
               <thead className="bg-surface-container-low text-secondary text-[11px] uppercase tracking-wider font-bold border-b border-surface-container">
                 <tr>
                   <th className="py-3 px-4">Policy Rule Name</th>
@@ -287,8 +287,8 @@ export const FleetMonitoringView: React.FC<FleetMonitoringViewProps> = ({ onShow
               </button>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left font-body-sm text-[13px]">
+          <div className="overflow-x-auto w-full">
+            <table className="w-full min-w-[700px] text-left font-body-sm text-[13px]">
               <thead className="bg-surface-container-low text-secondary text-[11px] uppercase tracking-wider font-bold border-b border-surface-container">
                 <tr>
                   <th className="py-3 px-4">RFID UID Token</th>

@@ -33,8 +33,8 @@ export const ProvisionStationModal: React.FC<ProvisionStationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-on-background/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 max-w-lg w-full p-6 animate-scaleUp">
+    <div className="fixed inset-0 z-50 bg-on-background/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 animate-scaleUp my-auto">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-surface-container">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary text-[24px]">ev_station</span>

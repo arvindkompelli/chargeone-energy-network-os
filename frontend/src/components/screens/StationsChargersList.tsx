@@ -88,10 +88,10 @@ export const StationsChargersList: React.FC<StationsChargersListProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setIsGroundingOpen(!isGroundingOpen)}
-            className="px-3.5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 text-[13px] font-bold flex items-center gap-1.5 transition-colors border border-emerald-500/30 cursor-pointer"
+            className="px-3 sm:px-3.5 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 text-[12px] sm:text-[13px] font-bold flex items-center gap-1.5 transition-colors border border-emerald-500/30 cursor-pointer"
             title="Explore Live Google Maps EV charging hubs"
           >
             <span className="material-symbols-outlined text-[18px] text-emerald-600">pin_drop</span>
@@ -99,14 +99,14 @@ export const StationsChargersList: React.FC<StationsChargersListProps> = ({
           </button>
           <button
             onClick={() => onShowToast('Exported fleet hardware specification manifest (JSON/CSV).', 'success')}
-            className="px-3.5 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-[13px] font-semibold flex items-center gap-1.5 transition-colors border border-outline-variant/20"
+            className="px-3 sm:px-3.5 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-[12px] sm:text-[13px] font-semibold flex items-center gap-1.5 transition-colors border border-outline-variant/20 cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">download</span>
             <span>Export Inventory</span>
           </button>
           <button
             onClick={onOpenProvisionModal}
-            className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-[13px] font-bold flex items-center gap-1.5 shadow-xs transition-all"
+            className="px-3.5 sm:px-4 py-2 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-[12px] sm:text-[13px] font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">add_circle</span>
             <span>+ Provision Charger</span>
@@ -253,7 +253,7 @@ export const StationsChargersList: React.FC<StationsChargersListProps> = ({
             />
           </div>
 
-          <div className="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+          <div className="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded-lg">
             <button
               onClick={() => setFilter('all')}
               className={`px-3 py-1 rounded text-[11px] font-bold transition-all ${
@@ -287,8 +287,8 @@ export const StationsChargersList: React.FC<StationsChargersListProps> = ({
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left font-body-sm text-[13px]">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full min-w-[700px] text-left font-body-sm text-[13px]">
             <thead className="bg-surface-container-low text-secondary text-[11px] uppercase tracking-wider font-bold border-b border-surface-container">
               <tr>
                 <th className="py-3 px-4">Node ID &amp; Location</th>

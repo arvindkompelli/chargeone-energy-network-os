@@ -27,6 +27,7 @@ export default function App() {
   const [selectedCpo, setSelectedCpo] = useState('CPO Portal (Starlight Energy)');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Modals & Feedback
   const [isProvisionModalOpen, setIsProvisionModalOpen] = useState(false);
@@ -56,6 +57,10 @@ export default function App() {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
         e.preventDefault();
         setIsAiDrawerOpen((prev) => !prev);
+      }
+      if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'b' || e.key === '[')) {
+        e.preventDefault();
+        setIsSidebarCollapsed((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -89,7 +94,7 @@ export default function App() {
         onSuccess={handleProvisionSuccess}
       />
 
-      {/* ⌘K Command Palette Modal */}
+      {/* Command Palette Modal */}
       <CommandPaletteModal
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
@@ -101,7 +106,7 @@ export default function App() {
         }}
       />
 
-      {/* Google Maps Grounding & AI Assistant Drawer (⌘J) */}
+      {/* Google Maps Grounding & AI Assistant Drawer */}
       <AiMapsAssistantDrawer
         isOpen={isAiDrawerOpen}
         onClose={() => setIsAiDrawerOpen(false)}
@@ -111,7 +116,7 @@ export default function App() {
 
       {isMobileView ? (
         // Dedicated Driver Mobile App Experience (Image 9)
-        <div className="w-full flex-1 flex flex-col items-center justify-center p-4 bg-surface-container-low">
+        <div className="w-full flex-1 flex flex-col items-center justify-center p-0 sm:p-4 bg-surface sm:bg-surface-container-low">
           <DriverMobileApp
             onShowToast={showToast}
             onExitMobileView={() => handleNavigate('overview-dashboard')}
@@ -129,6 +134,8 @@ export default function App() {
             isMobileViewActive={isMobileView}
             isOpenMobileDrawer={isMobileDrawerOpen}
             onCloseMobileDrawer={() => setIsMobileDrawerOpen(false)}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
           />
 
           {/* Persistent Header */}
@@ -143,11 +150,12 @@ export default function App() {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onToggleMobileMenu={() => setIsMobileDrawerOpen((prev) => !prev)}
+            isSidebarCollapsed={isSidebarCollapsed}
           />
 
           {/* Main Viewport Content */}
-          <main className="pl-0 xl:pl-72 pt-16 min-h-screen w-full flex-1 bg-surface">
-            <div className="w-full px-4 sm:px-6 xl:px-8 py-6">
+          <main className={`pt-16 min-h-screen w-full flex-1 bg-surface pl-0 will-change-[padding-left] transition-[padding-left] duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${isSidebarCollapsed ? 'xl:pl-[72px]' : 'xl:pl-72'}`}>
+            <div className="w-full max-w-full px-3 sm:px-6 xl:px-8 py-4 sm:py-6 overflow-x-hidden min-w-0">
               {currentScreen === 'overview-dashboard' && (
                 <OverviewDashboard
                   onNavigate={handleNavigate}

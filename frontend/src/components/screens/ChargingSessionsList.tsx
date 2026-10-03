@@ -64,7 +64,7 @@ export const ChargingSessionsList: React.FC<ChargingSessionsListProps> = ({
       {/* Sessions Table */}
       <div className="bg-surface-container-lowest rounded-xl shadow-xs border border-outline-variant/20 overflow-hidden flex flex-col">
         <div className="p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-surface-container">
-          <div className="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+          <div className="flex flex-wrap items-center gap-1 bg-surface-container p-1 rounded-lg">
             <button
               onClick={() => setProtocolFilter('all')}
               className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
@@ -108,7 +108,7 @@ export const ChargingSessionsList: React.FC<ChargingSessionsListProps> = ({
             </button>
           </div>
 
-          <div className="relative flex-1 max-w-xs">
+          <div className="relative flex-1 max-w-full sm:max-w-xs">
             <span className="material-symbols-outlined text-[18px] text-secondary absolute left-3 top-2.5">
               search
             </span>
@@ -122,8 +122,8 @@ export const ChargingSessionsList: React.FC<ChargingSessionsListProps> = ({
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left font-body-sm text-[13px]">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full min-w-[840px] text-left font-body-sm text-[13px]">
             <thead className="bg-surface-container-low text-secondary text-[11px] uppercase tracking-wider font-bold border-b border-surface-container">
               <tr>
                 <th className="py-3 px-4">Session ID</th>

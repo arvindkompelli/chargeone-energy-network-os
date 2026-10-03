@@ -299,7 +299,12 @@ export const LiveTelemetryHealth: React.FC<LiveTelemetryHealthProps> = ({ onShow
             </div>
             <div className="flex items-center gap-2 text-secondary text-[11px]">
               <span>Sort by:</span>
-              <button className="font-bold text-on-surface underline">Criticality</button>
+              <button
+                onClick={() => onShowToast?.('Sorted hardware fleet by criticality rating.', 'info')}
+                className="font-bold text-on-surface underline cursor-pointer hover:text-primary transition-colors"
+              >
+                Criticality
+              </button>
             </div>
           </div>
 
@@ -472,11 +477,17 @@ export const LiveTelemetryHealth: React.FC<LiveTelemetryHealthProps> = ({ onShow
                 <span>Packet drop rate: 0.001%</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <button className="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface shadow-xs font-semibold">
+                <button
+                  onClick={() => onShowToast?.('Already at beginning of telemetry stream', 'info')}
+                  className="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface shadow-xs font-semibold hover:bg-surface-container transition-colors cursor-pointer"
+                >
                   Previous
                 </button>
                 <span className="px-2.5 py-1 font-bold text-on-surface">Page 1 of 80</span>
-                <button className="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface shadow-xs font-semibold">
+                <button
+                  onClick={() => onShowToast?.('Displaying next 10 telemetry nodes', 'info')}
+                  className="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface shadow-xs font-semibold hover:bg-surface-container transition-colors cursor-pointer"
+                >
                   Next
                 </button>
               </div>

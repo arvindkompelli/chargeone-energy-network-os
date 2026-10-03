@@ -66,6 +66,15 @@
     background-color: #f8f9ff;
     color: #0b1c30;
     font-family: var(--font-sans);
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
 }
 

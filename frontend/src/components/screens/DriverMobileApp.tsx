@@ -145,6 +145,13 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
   const [bayName, setBayName] = useState('Bay 02');
   const [chargerSpec, setChargerSpec] = useState('CCS2 (Gun A) • Max 180 kW');
   const [flashlightOn, setFlashlightOn] = useState(false);
+  const [hasTorchCapability, setHasTorchCapability] = useState(false);
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [cameraState, setCameraState] = useState<'idle' | 'requesting' | 'active' | 'denied' | 'unsupported'>('idle');
+  const [cameraErrorMessage, setCameraErrorMessage] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+
   const [isScanningSimulation, setIsScanningSimulation] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [isScanCancelling, setIsScanCancelling] = useState(false);
@@ -297,11 +304,161 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
     }, 1400);
   };
 
+  // ── Camera Scanner Lifecycle & Permissions ──────────────────────────
+  const startCamera = async (mode: 'environment' | 'user' = facingMode) => {
+    // Release any previous track
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraState('unsupported');
+      setCameraErrorMessage('Camera access is not supported by your browser or environment.');
+      return;
+    }
+
+    try {
+      setCameraState('requesting');
+      setCameraErrorMessage(null);
+
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: { ideal: mode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      mediaStreamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
+
+      // Check for hardware torch / flashlight capability
+      const track = stream.getVideoTracks()[0];
+      if (track && typeof track.getCapabilities === 'function') {
+        const caps: any = track.getCapabilities();
+        setHasTorchCapability(Boolean(caps && caps.torch));
+      } else {
+        setHasTorchCapability(false);
+      }
+
+      setCameraState('active');
+    } catch (err: any) {
+      console.warn('Camera request error:', err);
+      setCameraState('denied');
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setCameraErrorMessage('Camera permission was blocked. Please allow camera access in browser site settings.');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setCameraErrorMessage('No camera device detected on this system.');
+      } else {
+        setCameraErrorMessage(err.message || 'Unable to access camera.');
+      }
+    }
+  };
+
+  const stopCamera = () => {
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setCameraState('idle');
+    setFlashlightOn(false);
+  };
+
+  const handleToggleFacingMode = () => {
+    const next = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(next);
+    startCamera(next);
+  };
+
+  const handleToggleTorch = async () => {
+    const newTorchState = !flashlightOn;
+    setFlashlightOn(newTorchState);
+    if (mediaStreamRef.current) {
+      const track = mediaStreamRef.current.getVideoTracks()[0];
+      if (track && typeof track.applyConstraints === 'function') {
+        try {
+          const caps: any = typeof track.getCapabilities === 'function' ? track.getCapabilities() : {};
+          if (caps && caps.torch) {
+            await (track as any).applyConstraints({
+              advanced: [{ torch: newTorchState }],
+            });
+            onShowToast(newTorchState ? 'Camera flashlight turned on' : 'Camera flashlight turned off', 'info');
+            return;
+          }
+        } catch {
+          // torch constraint not supported
+        }
+      }
+    }
+    onShowToast(newTorchState ? 'Flashlight simulated on' : 'Flashlight turned off', 'info');
+  };
+
+  // Start / stop camera on modal open
+  useEffect(() => {
+    if (isQrScannerOpen) {
+      startCamera(facingMode);
+    } else {
+      stopCamera();
+    }
+    return () => {
+      stopCamera();
+    };
+  }, [isQrScannerOpen]);
+
+  // Real-time Barcode / QR detection loop via native BarcodeDetector if supported
+  useEffect(() => {
+    if (!isQrScannerOpen || cameraState !== 'active') return;
+
+    let animId: number;
+    let detector: any = null;
+
+    if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+      try {
+        detector = new (window as any).BarcodeDetector({ formats: ['qr_code'] });
+      } catch {
+        detector = null;
+      }
+    }
+
+    const checkFrame = async () => {
+      if (videoRef.current && detector && !isScanningSimulation && videoRef.current.readyState >= 2) {
+        try {
+          const barcodes = await detector.detect(videoRef.current);
+          if (barcodes && barcodes.length > 0) {
+            const raw = barcodes[0].rawValue || '';
+            const match = nearbyStations.find(
+              (s) => s.chargerId.toLowerCase() === raw.toLowerCase() || raw.toLowerCase().includes(s.chargerId.toLowerCase())
+            ) || nearbyStations[0];
+            handleInitiateChargingFromQr(match);
+            return;
+          }
+        } catch {
+          // ignore detection frame errors
+        }
+      }
+      animId = requestAnimationFrame(checkFrame);
+    };
+
+    animId = requestAnimationFrame(checkFrame);
+    return () => cancelAnimationFrame(animId);
+  }, [isQrScannerOpen, cameraState, isScanningSimulation]);
+
   // Clean up scanning timers on unmount
   useEffect(() => {
     return () => {
       if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
       if (scanAnimRef.current) cancelAnimationFrame(scanAnimRef.current);
+      stopCamera();
     };
   }, []);
 
@@ -401,9 +558,24 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
   });
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-[calc(100vh-6rem)] py-4">
+    <div className="flex flex-col items-center justify-center w-full min-h-screen sm:min-h-[calc(100vh-4rem)] p-0 sm:py-4">
+      {onExitMobileView && (
+        <div className="w-full sm:max-w-[420px] flex items-center justify-between px-3.5 py-2 sm:mb-2 bg-surface-container-lowest/95 backdrop-blur-md rounded-none sm:rounded-xl border-b sm:border border-outline-variant/30 text-xs shadow-xs z-30">
+          <div className="flex items-center gap-1.5 text-secondary">
+            <span className="material-symbols-outlined text-[16px] text-primary">phone_iphone</span>
+            <span className="font-semibold text-on-surface">Driver Companion App</span>
+          </div>
+          <button
+            onClick={onExitMobileView}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface font-semibold transition-all cursor-pointer text-[11px]"
+          >
+            <span className="material-symbols-outlined text-[14px]">arrow_back</span>
+            <span>Exit to Console</span>
+          </button>
+        </div>
+      )}
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-[420px] bg-surface rounded-3xl shadow-2xl border-4 border-surface-container-high overflow-hidden flex flex-col relative select-none animate-fadeIn min-h-[780px] max-h-[860px]">
+      <div className="w-full sm:max-w-[420px] bg-surface rounded-none sm:rounded-3xl shadow-none sm:shadow-2xl border-0 sm:border-4 border-surface-container-high overflow-hidden flex flex-col relative select-none animate-fadeIn h-[calc(100vh-44px)] sm:h-[820px] sm:max-h-[860px]">
         {/* Mobile Header Bar */}
         <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur-xl shadow-xs px-4 pt-3 pb-3 border-b border-outline-variant/20 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -1603,17 +1775,6 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
               </div>
             </div>
           )}
-
-          {onExitMobileView && (
-            <div className="mt-2 pt-2 border-t border-outline-variant/20 flex justify-center">
-              <button
-                onClick={onExitMobileView}
-                className="px-4 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-[12px] font-bold transition-colors cursor-pointer"
-              >
-                Return to Enterprise Command Center
-              </button>
-            </div>
-          )}
         </main>
 
         {/* QR Code Scanner Viewfinder Modal Overlay */}
@@ -1634,22 +1795,33 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
                   <span className="material-symbols-outlined text-[16px] text-[#85f8c4]">help</span>
                   <span>Guide</span>
                 </button>
+
+                {/* Flip Camera (Back / Front) */}
                 <button
-                  onClick={() => {
-                    setFlashlightOn(!flashlightOn);
-                    onShowToast(flashlightOn ? 'Flashlight turned off' : 'Flashlight turned on', 'info');
-                  }}
+                  onClick={handleToggleFacingMode}
+                  className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer"
+                  title={`Switch to ${facingMode === 'environment' ? 'Front' : 'Back'} Camera`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">cameraswitch</span>
+                </button>
+
+                {/* Flashlight Torch Toggle */}
+                <button
+                  onClick={handleToggleTorch}
                   className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                     flashlightOn ? 'bg-[#85f8c4] text-[#002114]' : 'bg-white/15 text-white hover:bg-white/25'
                   }`}
-                  title="Toggle Flashlight"
+                  title={hasTorchCapability ? 'Toggle Camera Flashlight' : 'Toggle Flashlight'}
                 >
                   <span className="material-symbols-outlined text-[18px]">
                     {flashlightOn ? 'flash_on' : 'flash_off'}
                   </span>
                 </button>
+
+                {/* Close Scanner */}
                 <button
                   onClick={() => {
+                    stopCamera();
                     setIsQrScannerOpen(false);
                     setIsScanningSimulation(false);
                     setShowQrHelpModal(false);
@@ -1689,24 +1861,86 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
                 </div>
               )}
 
-              <div className="relative w-60 h-60 border-2 border-white/20 rounded-2xl flex items-center justify-center overflow-hidden shadow-2xl bg-black/60">
+              {/* Viewfinder Frame with Camera Feed */}
+              <div
+                onClick={() => {
+                  if (cameraState === 'active' && !isScanningSimulation) {
+                    handleInitiateChargingFromQr(nearbyStations[0]);
+                  }
+                }}
+                className="relative w-64 h-64 border-2 border-white/20 rounded-2xl flex items-center justify-center overflow-hidden shadow-2xl bg-black group cursor-pointer"
+                title={cameraState === 'active' ? 'Point at QR code or tap frame to lock & connect' : undefined}
+              >
+                {/* Live Camera Video Stream */}
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                    cameraState === 'active' ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+
+                {/* Camera Requesting / Loading State */}
+                {cameraState === 'requesting' && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/85 text-white z-10 animate-fadeIn p-4 text-center">
+                    <span className="material-symbols-outlined text-[34px] text-[#85f8c4] animate-spin">
+                      progress_activity
+                    </span>
+                    <span className="text-[12px] font-bold text-white">Opening Device Camera...</span>
+                    <span className="text-[10px] text-white/60">Allow camera permission if prompted by browser</span>
+                  </div>
+                )}
+
+                {/* Camera Denied / Unsupported State */}
+                {(cameraState === 'denied' || cameraState === 'unsupported') && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/90 text-white p-4 text-center z-10">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/70">
+                      <span className="material-symbols-outlined text-[24px]">videocam_off</span>
+                    </div>
+                    <span className="text-[12px] font-bold text-white">Camera Access</span>
+                    <p className="text-[10px] text-white/70 leading-tight max-w-[210px]">
+                      {cameraErrorMessage || 'Allow camera permission to scan physical QR code.'}
+                    </p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startCamera(facingMode);
+                      }}
+                      className="mt-1 px-3 py-1.5 bg-[#006948] hover:bg-[#00855d] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-xs"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">refresh</span>
+                      <span>Retry Camera</span>
+                    </button>
+                  </div>
+                )}
+
                 {/* Target Corner Accents */}
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#85f8c4] rounded-tl-lg"></div>
-                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#85f8c4] rounded-tr-lg"></div>
-                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#85f8c4] rounded-bl-lg"></div>
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#85f8c4] rounded-br-lg"></div>
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#85f8c4] rounded-tl-lg z-20 pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#85f8c4] rounded-tr-lg z-20 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#85f8c4] rounded-bl-lg z-20 pointer-events-none"></div>
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#85f8c4] rounded-br-lg z-20 pointer-events-none"></div>
 
                 {/* Animated Laser Scanning Line */}
-                <div className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-[#85f8c4] to-transparent shadow-[0_0_12px_#85f8c4] animate-laser-scan pointer-events-none"></div>
+                <div className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-[#85f8c4] to-transparent shadow-[0_0_12px_#85f8c4] animate-laser-scan pointer-events-none z-20"></div>
 
                 {/* Reticle in center */}
-                <div className="w-12 h-12 border border-white/30 rounded-full flex items-center justify-center pointer-events-none">
+                <div className="w-12 h-12 border border-white/30 rounded-full flex items-center justify-center pointer-events-none z-20">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#85f8c4]"></div>
                 </div>
 
+                {/* Camera Live Status Badge */}
+                {cameraState === 'active' && (
+                  <div className="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-[9px] text-[#85f8c4] font-medium border border-white/10 pointer-events-none">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#85f8c4] animate-pulse"></span>
+                    <span>Camera Live ({facingMode === 'environment' ? 'Rear' : 'Front'})</span>
+                  </div>
+                )}
+
                 {/* Scanner feedback overlay */}
                 {isScanningSimulation && (
-                  <div className="absolute inset-0 bg-black/85 backdrop-blur-xs flex flex-col items-center justify-center gap-2 p-4 text-center z-20 animate-fadeIn">
+                  <div className="absolute inset-0 bg-black/85 backdrop-blur-xs flex flex-col items-center justify-center gap-2 p-4 text-center z-30 animate-fadeIn">
                     <span className="material-symbols-outlined text-[36px] text-[#85f8c4] animate-spin">sync</span>
                     <span className="text-[13px] font-bold text-white">Connecting to Charger...</span>
                     <span className="text-[10px] text-[#85f8c4] font-mono">OCPP 2.0.1 Handshake In Progress</span>
@@ -1715,7 +1949,9 @@ export const DriverMobileApp: React.FC<DriverMobileAppProps> = ({
               </div>
 
               <p className="text-white/80 text-[11px] text-center mt-2.5 max-w-[240px]">
-                Align charger QR sticker inside frame to lock solenoid &amp; start charging.
+                {cameraState === 'active'
+                  ? 'Point camera at charger sticker or tap frame to lock & connect.'
+                  : 'Align charger QR sticker inside frame to lock solenoid & start charging.'}
               </p>
 
               {/* Interactive Alignment Help Trigger Button */}

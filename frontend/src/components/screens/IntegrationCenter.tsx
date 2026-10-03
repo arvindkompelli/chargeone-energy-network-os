@@ -621,19 +621,31 @@ export const IntegrationCenter: React.FC<IntegrationCenterProps> = ({
         <div className="px-5 py-3 bg-surface-container-lowest flex items-center justify-between text-[11px] text-secondary border-t border-surface-container">
           <span>Showing {filteredPartners.length} of 14 peer connections</span>
           <div className="flex items-center gap-1">
-            <button className="px-2 py-1 rounded bg-surface-container text-on-surface disabled:opacity-50" disabled>
+            <button
+              onClick={() => onShowToast('Already at the first page of peer connections.', 'info')}
+              className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+            >
               Previous
             </button>
             <span className="px-2 py-1 bg-primary text-on-primary rounded font-bold font-mono">
               1
             </span>
-            <button className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high">
+            <button
+              onClick={() => onShowToast('Showing Page 2 peer connections', 'info')}
+              className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+            >
               2
             </button>
-            <button className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high">
+            <button
+              onClick={() => onShowToast('Showing Page 3 peer connections', 'info')}
+              className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+            >
               3
             </button>
-            <button className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high">
+            <button
+              onClick={() => onShowToast('Loaded next batch of roaming partner nodes.', 'info')}
+              className="px-2 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+            >
               Next
             </button>
           </div>
